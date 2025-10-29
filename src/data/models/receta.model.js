@@ -7,6 +7,7 @@
  * @property {object[]} steps
  * @property {object[]} ingredients
  * @property {string} user_id
+ * @property {string | null} image_url
  */
 
 /**
@@ -18,6 +19,7 @@
  * @property {object[]} steps
  * @property {object[]} ingredients
  * @property {string} userId
+ * @property {string | null} imageUrl
  */
 
 /**
@@ -36,6 +38,7 @@ function fromSupabase(supabaseRow) {
         // La magia de la traducción ocurre aquí:
         userId: supabaseRow.user_id,
         createdAt: supabaseRow.created_at,
+        imageUrl: supabaseRow.image_url,
     };
 }
 

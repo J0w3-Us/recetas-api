@@ -95,6 +95,7 @@ class RecetaController {
             if (req.body.steps !== undefined) updateData.steps = req.body.steps;
             if (req.body.ingredients !== undefined) updateData.ingredients = req.body.ingredients;
             if (req.body.is_public !== undefined) updateData.is_public = req.body.is_public;
+            if (req.body.imageUrl !== undefined) updateData.imageUrl = req.body.imageUrl;
 
             const recetaActualizada = await this.actualizarRecetaUseCase.execute(Number(id), updateData, userId);
 

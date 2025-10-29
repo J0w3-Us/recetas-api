@@ -81,6 +81,7 @@ class SupabaseRecetaRepository extends RecetaRepository {
             ingredients: payload.ingredients || [],
             user_id: payload.userId,
             is_public: payload.is_public === undefined ? true : payload.is_public,
+            image_url: payload.imageUrl || null,
         };
 
         // Use admin client for writes when available (bypass RLS server-side) and enforce user ownership
@@ -102,6 +103,7 @@ class SupabaseRecetaRepository extends RecetaRepository {
         if (updateProps.steps !== undefined) update.steps = updateProps.steps;
         if (updateProps.ingredients !== undefined) update.ingredients = updateProps.ingredients;
         if (updateProps.is_public !== undefined) update.is_public = updateProps.is_public;
+        if (updateProps.imageUrl !== undefined) update.image_url = updateProps.imageUrl;
 
         const writeClient = supabaseAdmin || supabase;
         const { data, error } = await writeClient.from('recipes').update(update).eq('id', id).select().maybeSingle();

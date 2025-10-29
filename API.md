@@ -103,12 +103,20 @@ Notas sobre autenticación:
   "description": "Rica receta",
   "steps": ["Pelar", "Mezclar", "Hornear"],
   "ingredients": ["manzana", "harina", "azúcar"],
+  "imageUrl": "https://ejemplo.com/tarta-manzana.jpg",
   "is_public": true
   }
+- Campos:
+  - `name` (requerido): título de la receta (mínimo 3 caracteres)
+  - `description` (requerido): descripción de la receta
+  - `steps` (requerido): array de pasos (mínimo 1 elemento)
+  - `ingredients` (requerido): array de ingredientes (mínimo 1 elemento)
+  - `imageUrl` (opcional): URL de la imagen de la receta (debe ser http/https, máximo 2000 caracteres)
+  - `is_public` (opcional): visibilidad de la receta (default: true)
 - Descripción: Crea una receta. El `userId` se toma del token (middleware). Devuelve la receta creada.
 - Respuestas:
   - 201 Created: receta creada (objeto JSON)
-  - 400 Bad Request: si falta `name` u otros errores
+  - 400 Bad Request: si falta `name` u otros errores de validación
   - 401 Unauthorized: si no se proporciona token o es inválido
 - Nota sobre persistencia y RLS: Si tu app utiliza la ANON key y RLS está activo, los writes pueden fallar; la implementación del repositorio intenta usar `supabaseAdmin` (service role) cuando está disponible para bypass de RLS.
 
@@ -145,6 +153,7 @@ Notas sobre autenticación:
         "description": "...",
         "steps": [...],
         "ingredients": [...],
+        "imageUrl": "https://ejemplo.com/mi-primera-receta.jpg",
         "userId": "uuid-del-usuario-logueado",
         "is_public": true,
         "created_at": "2025-10-29T..."
@@ -181,6 +190,7 @@ Notas sobre autenticación:
       "description": "Rica receta",
       "steps": ["Pelar", "Mezclar", "Hornear"],
       "ingredients": ["manzana", "harina", "azúcar"],
+      "imageUrl": "https://ejemplo.com/tarta-manzana.jpg",
       "userId": "uuid-del-usuario",
       "is_public": true,
       "created_at": "2025-10-29T..."
@@ -203,6 +213,7 @@ Notas sobre autenticación:
     "description": "Versión actualizada de la receta",
     "steps": ["Paso 1 actualizado", "Paso 2 nuevo", "Paso 3 mejorado"],
     "ingredients": ["manzana", "harina", "azúcar", "canela nueva"],
+    "imageUrl": "https://ejemplo.com/tarta-manzana-mejorada.jpg",
     "is_public": true
   }
   ```
@@ -212,6 +223,7 @@ Notas sobre autenticación:
   - `description`: descripción (no puede estar vacía si se envía)
   - `steps`: array de pasos (mínimo 1 elemento si se envía)
   - `ingredients`: array de ingredientes (mínimo 1 elemento si se envía)
+  - `imageUrl`: URL de la imagen de la receta (debe ser http/https, máximo 2000 caracteres)
   - `is_public`: visibilidad de la receta
 - Ejemplo de llamada:
   ```bash
@@ -222,13 +234,20 @@ Notas sobre autenticación:
   -d '{"name":"Nuevo título","description":"Nueva descripción"}'
   ```
 - Respuestas:
+
   - 200 OK: receta actualizada (objeto JSON completo)
   - 400 Bad Request: datos inválidos o errores de validación
     ```json
     {
       "errors": [
-        {"msg": "El título (name) debe tener al menos 3 caracteres.", "param": "name"},
-        {"msg": "La descripción no puede estar vacía.", "param": "description"}
+        {
+          "msg": "El título (name) debe tener al menos 3 caracteres.",
+          "param": "name"
+        },
+        {
+          "msg": "La descripción no puede estar vacía.",
+          "param": "description"
+        }
       ]
     }
     ```
@@ -253,9 +272,7 @@ Notas sobre autenticación:
   - 400 Bad Request: ID inválido
     ```json
     {
-      "errors": [
-        {"msg": "El ID debe ser un número válido.", "param": "id"}
-      ]
+      "errors": [{ "msg": "El ID debe ser un número válido.", "param": "id" }]
     }
     ```
   - 401 Unauthorized: token inválido
@@ -325,7 +342,7 @@ Notas sobre autenticación:
   curl -X POST http://localhost:3000/api/recetas \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <access_token>" \
-  -d '{"name":"Test","description":"...","steps":[],"ingredients":[],"is_public":true}'
+  -d '{"name":"Test","description":"...","steps":[],"ingredients":[],"imageUrl":"https://ejemplo.com/receta.jpg","is_public":true}'
   ```
 
 - Get my recipes:
@@ -335,11 +352,29 @@ Notas sobre autenticación:
   -H "Authorization: Bearer <access_token>"
   ```
 
+- Update recipe with image:
+
+  ```bash
+  curl -X PUT http://localhost:3000/api/recetas/123 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <access_token>" \
+  -d '{"name":"Nueva receta con imagen","imageUrl":"https://cdn.ejemplo.com/nueva-foto.jpg"}'
+  ```
+
+- Remove image from recipe:
+
+  ```bash
+  curl -X PUT http://localhost:3000/api/recetas/123 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <access_token>" \
+  -d '{"imageUrl":null}'
+  ```
+
 - Debug insert (direct DB):
   ```bash
   curl -X POST http://localhost:3000/api/debug/recetas \
   -H "Content-Type: application/json" \
-  -d '{"name":"Debug","userId":"402fb640-3b5d-4653-a585-5c95256bcb18"}'
+  -d '{"name":"Debug","userId":"402fb640-3b5d-4653-a585-5c95256bcb18","imageUrl":"https://debug.com/imagen.jpg"}'
   ```
 
 ---

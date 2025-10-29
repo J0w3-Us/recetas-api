@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate": "node scripts/migrate.js"
+    "test": "node tests/test-frontend-validation.js",
+    "test:validation": "node tests/test-frontend-validation.js",
+    "test:update-delete": "node tests/test-update-delete-validation.js",
+    "test:real-api": "node tests/test-real-api-calls.js",
+    "migrate": "node scripts/migrate.js",
+    "seed:recetas": "node scripts/seed-recetas.js",
+    "test:integration": "node scripts/run-integration-tests.js"
   },
   "keywords": [],
   "author": "",
@@ -16,10 +21,13 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "postgres": "^3.4.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }

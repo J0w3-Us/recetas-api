@@ -5,6 +5,9 @@ const config = require('./config');
 // Importaciones de todas nuestras piezas (algunas se cargan de forma condicional)
 const CrearRecetaUseCase = require('./domain/use-cases/crear-receta.usecase');
 const ObtenerTodasRecetasUseCase = require('./domain/use-cases/obtener-todas-recetas.usecase');
+const ObtenerRecetaPorIdUseCase = require('./domain/use-cases/obtener-receta-por-id.usecase');
+const ObtenerMisRecetasUseCase = require('./domain/use-cases/obtener-mis-recetas.usecase');
+const ActualizarRecetaUseCase = require('./domain/use-cases/actualizar-receta.usecase');
 const EliminarRecetaUseCase = require('./domain/use-cases/eliminar-receta.usecase');
 const RecetaController = require('./api/controllers/receta.controller');
 const createRecetaRouter = require('./api/routes/receta.routes');
@@ -122,18 +125,41 @@ function main() {
     // 2. Inicializamos los Casos de Uso con el repositorio
     const crearRecetaUseCase = new CrearRecetaUseCase(recetaRepository);
     const obtenerTodasRecetasUseCase = new ObtenerTodasRecetasUseCase(recetaRepository);
+    const obtenerRecetaPorIdUseCase = new ObtenerRecetaPorIdUseCase(recetaRepository);
+    const obtenerMisRecetasUseCase = new ObtenerMisRecetasUseCase(recetaRepository);
+    const actualizarRecetaUseCase = new ActualizarRecetaUseCase(recetaRepository);
     const eliminarRecetaUseCase = new EliminarRecetaUseCase(recetaRepository);
 
     // 3. Inicializamos el Controlador con los casos de uso
     const recetaController = new RecetaController(
         crearRecetaUseCase,
         obtenerTodasRecetasUseCase,
-        eliminarRecetaUseCase
+        eliminarRecetaUseCase,
+        obtenerRecetaPorIdUseCase,
+        obtenerMisRecetasUseCase,
+        actualizarRecetaUseCase
     );
 
     // 4. Creamos y usamos el Router
     const recetaRouter = createRecetaRouter(recetaController);
     app.use('/api/recetas', recetaRouter);
+
+    // Ruta de prueba que omite autenticación pero usa las mismas validaciones
+    // Solo en entornos de desarrollo / testing. Esto facilita tests automáticos.
+    try {
+        const recetaValidation = createRecetaRouter.recetaValidation;
+        if (recetaValidation && process.env.NODE_ENV !== 'production') {
+            // Montar en /api/recetas-test para permitir pruebas de validación sin auth
+            // Esta ruta inyecta un `req.user` de prueba (desde header `x-test-user`) para
+            // que el controlador pueda operar sin el middleware real de auth.
+            app.post('/api/recetas-test', recetaValidation, (req, res, next) => {
+                req.user = { id: req.headers['x-test-user'] || `test_user_${Date.now()}` };
+                next();
+            }, recetaController.create);
+        }
+    } catch (e) {
+        // no-op
+    }
 
     // Rutas de autenticación: cargamos rutas reales + rutas de prueba
     if (config.supabaseUrl && config.supabaseAnonKey) {

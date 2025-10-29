@@ -4,12 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/test-frontend-validation.js",
-    "test:validation": "node tests/test-frontend-validation.js",
-    "test:update-delete": "node tests/test-update-delete-validation.js",
-    "test:images": "node tests/test-image-validation.js",
-    "test:real-api": "node tests/test-real-api-calls.js",
-    "migrate": "node scripts/migrate.js",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
     "seed:recetas": "node scripts/seed-recetas.js",
     "test:integration": "node scripts/run-integration-tests.js"
   },

@@ -31,22 +31,7 @@ function createRecetaRouter(recetaController) {
             body('ingredients')
                 .isArray({ min: 1 }).withMessage('La receta debe tener al menos un ingrediente.'),
 
-            body('imageUrl')
-                .optional({ nullable: true })
-                .custom((value) => {
-                    if (value === null || value === undefined || value === '') {
-                        return true; // Permitir valores nulos/vacíos
-                    }
-                    // Validar como URL solo si tiene un valor
-                    const urlRegex = /^https?:\/\/.+/;
-                    if (!urlRegex.test(value)) {
-                        throw new Error('La URL de la imagen debe ser válida (http/https).');
-                    }
-                    if (value.length > 2000) {
-                        throw new Error('La URL de la imagen no puede exceder 2000 caracteres.');
-                    }
-                    return true;
-                })
+            // Nota: Eliminado campo imageUrl de la validación según solicitud.
         ],
         recetaController.create
     );
@@ -76,22 +61,7 @@ function createRecetaRouter(recetaController) {
             body('ingredients')
                 .optional()
                 .isArray({ min: 1 }).withMessage('La receta debe tener al menos un ingrediente.'),
-            body('imageUrl')
-                .optional({ nullable: true })
-                .custom((value) => {
-                    if (value === null || value === undefined || value === '') {
-                        return true; // Permitir valores nulos/vacíos para remover imagen
-                    }
-                    // Validar como URL solo si tiene un valor
-                    const urlRegex = /^https?:\/\/.+/;
-                    if (!urlRegex.test(value)) {
-                        throw new Error('La URL de la imagen debe ser válida (http/https).');
-                    }
-                    if (value.length > 2000) {
-                        throw new Error('La URL de la imagen no puede exceder 2000 caracteres.');
-                    }
-                    return true;
-                })
+            // Nota: Eliminado campo imageUrl de la validación según solicitud.
         ],
         recetaController.updateById
     );

@@ -13,9 +13,9 @@ class Receta {
      * @param {object[]} props.ingredients - Los ingredientes necesarios.
      * @param {string} props.userId - El ID del usuario creador.
      * @param {string} [props.createdAt] - La fecha de creación.
-     * @param {string | null} [props.imageUrl] - La URL de la imagen de la receta.
-     */
-    constructor({ id, name, description, steps, ingredients, userId, createdAt, imageUrl }) {
+     * (image handling removed)
+         */
+    constructor({ id, name, description, steps, ingredients, userId, createdAt }) {
         // --- Lógica de Validación ---
         // Una receta debe tener siempre un nombre.
         if (!name || typeof name !== 'string' || name.trim() === '') {
@@ -35,7 +35,6 @@ class Receta {
         this.ingredients = Array.isArray(ingredients) ? ingredients : [];
         this.userId = userId;
         this.createdAt = createdAt;
-        this.imageUrl = imageUrl;
     }
 
     /**
@@ -51,7 +50,7 @@ class Receta {
             ingredients: this.ingredients,
             userId: this.userId,
             createdAt: this.createdAt,
-            imageUrl: this.imageUrl,
+            // imageUrl removed from entity
         };
     }
 }
